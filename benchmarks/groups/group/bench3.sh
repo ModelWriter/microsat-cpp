@@ -8,7 +8,7 @@ s=0
 w=0
 
 for i in `cat name5`; do
-		../../.././microsat ../../bench3/$i > results 2>&1
+		../../.././microsat++ ../../bench3/$i > results 2>&1
 		if grep -q "UNSATISFIABLE" results; then
 		  echo "$i Pass!"
 			let "c+=1"

@@ -13,13 +13,91 @@ using namespace microsat;
 
 // -----------------------------------------------------------------------------
 //
-Driver::Driver(std::string filename) : filename(std::move(filename)) {
-    std::ifstream in(filename);
-    if (in) { // checks if the file is open
-
+driver::driver(std::string file) : filename(std::move(file)) {
+    if (parse() == UNSAT)
+        std::cout << "s UNSATISFIABLE\n";
+    // Solve without limit (number of conflicts)
+    else if (solver->solve() == UNSAT)
+        std::cout << "s UNSATISFIABLE\n";
+    // And print whether the formula has a solution
+    else {
+        std::cout << "s SATISFIABLE\n";
+        std::cout << "c model: ";
+        for (int i = 1; i <= solver->nVars; i++) {
+            if (solver->model[i])
+                std::cout << i << " ";
+            else
+                std::cout << "-" << i << " ";
+        }
+        std::cout << "\n";
     }
+    // Print the statistics
+    std::cout << "c statistics of " << filename
+              << " [ mem_used: " << solver->mem_used
+              << ", conflicts: " << solver->nConflicts
+              << ", max_lemmas: " << solver->maxLemmas << " ]";
 }
 
 // -----------------------------------------------------------------------------
-//
-void Driver::run() {}
+// Parse the DIMACS file
+int driver::parse() {
+    std::ifstream in(filename);
+    if (in) { // checks if the file is open
+        string line;
+        while (!in.eof()) {
+            getline(in, line);
+            if (line.length() == 0 || line[0] == 'c') {
+                continue;
+            } else if (line[0] == 'p') {
+                std::size_t pos = line.find("cnf", 0);
+                if (pos != std::string::npos) {
+                    std::string str = line.substr(pos + 4, line.length());
+                    int nVars, nClauses;
+                    std::istringstream ss(str);
+                    if (!(ss >> nVars >> nClauses))
+                        throw Fatal("can't extract nVars and nClauses!");
+                    cout << nVars << " " << nClauses << "\n";
+                    solver = std::make_unique<Solver>(nVars, nClauses);
+                }
+            } else {
+                std::istringstream ss(line);
+                auto& s = *solver;
+                int size = 0, lit = 0;
+                do {
+                    if (ss >> lit) { // !in.fail()
+                        s.buffer[size++] = lit;
+                        cout << lit << " ";
+                    }
+                } while (ss.good());
+                cout << "\n";
+                if (!ss.eof())
+                    throw Fatal(
+                        "I/O error or bad data during clause extraction");
+                // reached the end of the clause; add the clause to database
+                int* clause = s.addClause(s.buffer, size, 1);
+                // Check for empty clause or conflicting unit
+                // If either is found return UNSAT
+                if (!size || ((size == 1) && s.false_[clause[0]]))
+                    return UNSAT; //
+                // Check for a new unit
+                if ((size == 1) && !s.false_[-clause[0]]) {
+                    s.assign(clause, 1);
+                } // Directly assign new units (forced = 1)
+                size = 0;
+            } // Reset buffer
+        }
+
+    } // End While
+    in.close();
+    return SAT; // Return that no conflict was observed
+}
+
+// -----------------------------------------------------------------------------
+// driver instructions
+void driver::instructions() {
+    std::cout << "\nUsage: microsat++ <options>"
+                 "\n\nOption(s):\n"
+                 "\t-h,--help\tShow this help message\n"
+                 "\t-f <file>\tDIMACS cnf file"
+              << std::endl;
+}

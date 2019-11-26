@@ -1,14 +1,21 @@
 #!/bin/bash
 
+cd benchmarks/groups/group/ || exit
+
 printf '%s\n' "--------------------- Initiate tests --------------------------"
 printf '%s\n' ""
 printf '%s\n' "==============================================================="
-printf '%s\n' "Running Given Sample Games and Comparing the results..."
+printf '%s\n' "Running Benchmarks..."
 printf '%s\n' "==============================================================="
 
-printf "\n$>./kalah 6 4 human human < tests/sample.in\n\n"
-valgrind --leak-check=full ./kalah 6 4 human human <tests/sample.in
+printf "\n$>bench1.sh\n\n"
+bash bench1.sh
 
+printf "\n$>bench2.sh\n\n"
+bash bench2.sh
+
+printf "\n$>bench3.sh\n\n"
+bash bench3.sh
 
 printf '%s\n' ""
 printf '%s\n' "--------------------- Finalize tests --------------------------"

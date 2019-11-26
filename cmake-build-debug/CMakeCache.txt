@@ -223,12 +223,6 @@ microsat++_BINARY_DIR:STATIC=/home/ferhat/git/microsat++/cmake-build-debug
 //Value Computed by CMake
 microsat++_SOURCE_DIR:STATIC=/home/ferhat/git/microsat++
 
-//Value Computed by CMake
-microsat___BINARY_DIR:STATIC=/home/ferhat/git/microsat++/cmake-build-debug
-
-//Value Computed by CMake
-microsat___SOURCE_DIR:STATIC=/home/ferhat/git/microsat++
-
 
 ########################
 # INTERNAL cache entries

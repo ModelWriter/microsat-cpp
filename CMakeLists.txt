@@ -10,4 +10,8 @@ add_compile_options(-O1 -g -Wall -Wextra -Wpedantic -Wnull-dereference -Wnon-vir
 add_executable(microsat++
         main.cpp
         tools.hpp
-        tools.cpp solver.cpp solver.hpp driver.cpp driver.hpp)
+        tools.cpp
+        solver.cpp
+        solver.hpp
+        driver.cpp
+        driver.hpp)

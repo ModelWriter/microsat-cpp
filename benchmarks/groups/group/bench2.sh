@@ -8,7 +8,7 @@ s=0
 w=0
 
 for i in `cat name3`; do
-		../../.././microsat ../../bench2/sat/$i > results 2>&1
+		../../.././microsat++ ../../bench2/sat/$i > results 2>&1
 		if (grep -q "[^n]sat" results) || (grep -q "^sat" results); then
 		  echo "$i Pass!"
 			let "c+=1"
@@ -23,7 +23,7 @@ for i in `cat name3`; do
 done
 
 for i in `cat name4`; do
-		../../.././microsat ../../bench2/unsat/$i > results 2>&1
+		../../.././microsat++ ../../bench2/unsat/$i > results 2>&1
 		if grep -q "unsat" results; then
 		  echo "$i Pass!"
 			let "c+=1"

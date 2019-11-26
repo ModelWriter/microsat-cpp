@@ -1,5 +1,5 @@
 //  ----------------------------------------------------------------------------
-//  Header file for the solver class.        solver.cpp
+//  Implementation file for the solver class.                         solver.cpp
 //  Created by Ferhat Erata <ferhat.erata@yale.edu> on November 25, 2019.
 //  Copyright (c) 2019 Yale University. All rights reserved.
 // -----------------------------------------------------------------------------
@@ -10,10 +10,10 @@
 using namespace microsat;
 
 // -----------------------------------------------------------------------------
-// Default constructor
+// Default constructor that initializes the data structures
 Solver::Solver(int n, int m)
     : nVars(n), nClauses(m), db(std::make_unique<int[]>(mem_max)) {
-
+    cout << mem_max << endl;
     model = getMemory(n + 1);      // Full assignment of the variables
     prev = getMemory(n + 1);       // Previous variable in the heuristic order
     next = getMemory(n + 1);       // Next variable in the heuristic order
@@ -44,7 +44,7 @@ Solver::Solver(int n, int m)
 }
 
 // -----------------------------------------------------------------------------
-//
+// Allocate memory of size mem_size
 int* Solver::getMemory(const int mem_size) {
     // In case the code is used within a code base
     if (mem_used + mem_size > mem_max) {
@@ -84,9 +84,9 @@ int* Solver::addClause(int* in, int size, int irr) {
 
 // -----------------------------------------------------------------------------
 // Adds a watch pointer to a clause containing lit
-void Solver::addWatch(int lit, int mem) {
-    db[mem] = first[lit]; // By updating the database and the pointers
-    first[lit] = mem;
+void Solver::addWatch(int literal, int mem) {
+    db[mem] = first[literal]; // By updating the database and the pointers
+    first[literal] = mem;
 }
 
 // -----------------------------------------------------------------------------
@@ -120,11 +120,11 @@ void Solver::assign(int* reason_, int forced_) {
 
 // -----------------------------------------------------------------------------
 // Move the variable to the front of the decision list
-void Solver::bump(int lit) {
-    if (false_[lit] != IMPLIED) {
+void Solver::bump(int literal) {
+    if (false_[literal] != IMPLIED) {
         // MARK the literal as involved if not a top-level unit
-        false_[lit] = MARK;
-        int var = abs(lit);
+        false_[literal] = MARK;
+        int var = abs(literal);
         // In case var is not already the head of the list
         if (var != head) {
             prev[next[var]] = prev[var]; // Update the prev link, and
@@ -138,21 +138,21 @@ void Solver::bump(int lit) {
 
 // -----------------------------------------------------------------------------
 // Check if lit(eral) is implied by MARK literals
-int Solver::implied(int lit) {
+int Solver::implied(int literal) {
     // If checked before return old result
-    if (false_[lit] > MARK)
-        return (false_[lit] & MARK);
-    if (!reason[abs(lit)])
-        return 0; // In case lit is a decision, it is not implied
-    int* p = (db.get() + reason[abs(lit)] - 1); // Get the reason of lit(eral)
+    if (false_[literal] > MARK)
+        return (false_[literal] & MARK);
+    if (!reason[abs(literal)])
+        return 0; // In case literal is a decision, it is not implied
+    int* p = (db.get() + reason[abs(literal)] - 1); // Get the reason of literal
     // While there are literals in the reason, recursively check if non-MARK
     // literals are implied
     while (*(++p))
         if ((false_[*p] ^ MARK) && !implied(*p)) {
-            false_[lit] = IMPLIED - 1;
+            false_[literal] = IMPLIED - 1;
             return 0; // Mark and return not implied (denoted by IMPLIED - 1)
         }
-    false_[lit] = IMPLIED;
+    false_[literal] = IMPLIED;
     return 1; // Mark and return that the literal is implied
 }
 
@@ -188,9 +188,9 @@ void Solver::reduceDB(int k) {
         int count = 0, head_ = i;
         // Count the number of literals
         while (db.get()[i]) {
-            int lit = db.get()[i++];
+            int literal = db.get()[i++];
             // That are satisfied by the current model
-            if ((lit > 0) == model[abs(lit)])
+            if ((literal > 0) == model[abs(literal)])
                 count++;
         }
         // If the latter is smaller than k, add it back
