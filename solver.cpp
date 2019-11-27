@@ -13,7 +13,7 @@ using namespace microsat;
 // Default constructor that initializes the data structures
 Solver::Solver(int n, int m)
     : nVars(n), nClauses(m), db(std::make_unique<int[]>(mem_max)) {
-    cout << mem_max << endl;
+    //    cout << mem_max << endl;
     model = getMemory(n + 1);      // Full assignment of the variables
     prev = getMemory(n + 1);       // Previous variable in the heuristic order
     next = getMemory(n + 1);       // Next variable in the heuristic order
@@ -48,7 +48,8 @@ Solver::Solver(int n, int m)
 int* Solver::getMemory(const int mem_size) {
     // In case the code is used within a code base
     if (mem_used + mem_size > mem_max) {
-        throw Fatal("out of memory");
+        throw Fatal("out of memory: (mem_used) %i > %i (mem_max)",
+                    mem_used + mem_size, mem_max);
     }
     // Compute a pointer to the new memory location
     int* store = db.get() + mem_used;

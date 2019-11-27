@@ -32,10 +32,13 @@ driver::driver(std::string file) : filename(std::move(file)) {
         std::cout << "\n";
     }
     // Print the statistics
-    std::cout << "c statistics of " << filename
-              << " [ mem_used: " << solver->mem_used
-              << ", conflicts: " << solver->nConflicts
-              << ", max_lemmas: " << solver->maxLemmas << " ]";
+
+    std::cout
+        << "c--------------------------------------------------------------\n"
+        << "c statistics of " << filename << ":\n"
+        << "c [ mem_used: " << solver->mem_used
+        << ", conflicts: " << solver->nConflicts
+        << ", max_lemmas: " << solver->maxLemmas << " ]";
 }
 
 // -----------------------------------------------------------------------------
@@ -54,22 +57,23 @@ int driver::parse() {
                     std::string str = line.substr(pos + 4, line.length());
                     int nVars, nClauses;
                     std::istringstream ss(str);
-                    if (!(ss >> nVars >> nClauses))
+                    if (!(ss >> nVars >> nClauses)) // extract vars and clausesS
                         throw Fatal("can't extract nVars and nClauses!");
-                    cout << nVars << " " << nClauses << "\n";
+                    // cout << nVars << " " << nClauses << "\n";
+                    // late binding of the solver
                     solver = std::make_unique<Solver>(nVars, nClauses);
                 }
             } else {
                 std::istringstream ss(line);
                 auto& s = *solver;
-                int size = 0, lit = 0;
-                do {
-                    if (ss >> lit) { // !in.fail()
-                        s.buffer[size++] = lit;
-                        cout << lit << " ";
+                int size = 0, literal = 0;
+                do {                     // for each clause in the file
+                    if (ss >> literal) { // !in.fail()
+                        s.buffer[size++] = literal;
+                        // cout << literal << " ";
                     }
                 } while (ss.good());
-                cout << "\n";
+                // cout << "\n";
                 if (!ss.eof())
                     throw Fatal(
                         "I/O error or bad data during clause extraction");
