@@ -6,14 +6,19 @@ START=$(date +%s)
 c=0
 s=0
 w=0
-
+# ../../.././microsat++
+# minisat
+# ../../.././microsat
+solver="../../.././microsat++"
 fname="bench2"
-if [ ! -d $fname ]; then
+if [ -d $fname ]; then
+  rm $fname/*
+else
   mkdir $fname
 fi
 
 for i in $(cat name3); do
-  ../../.././microsat++ ../../bench2/sat/$i >results 2>&1
+  $solver ../../bench2/sat/$i >results 2>&1
   if (grep -q "[^N]SATISFIABLE" results) || (grep -q "^SATISFIABLE" results); then
     echo "$i Pass!"
     let "c+=1"
@@ -30,7 +35,7 @@ for i in $(cat name3); do
 done
 
 for i in $(cat name4); do
-  ../../.././microsat++ ../../bench2/unsat/$i >results 2>&1
+  $solver ../../bench2/unsat/$i >results 2>&1
   if grep -q "UNSATISFIABLE" results; then
     echo "$i Pass!"
     let "c+=1"

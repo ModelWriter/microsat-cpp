@@ -59,7 +59,7 @@ int driver::parse() {
                     std::istringstream ss(str);
                     if (!(ss >> nVars >> nClauses)) // extract vars and clausesS
                         throw Fatal("can't extract nVars and nClauses!");
-                    // cout << nVars << " " << nClauses << "\n";
+                    cout << "c " << nVars << " " << nClauses << "\n";
                     // late binding of the solver
                     solver = std::make_unique<Solver>(nVars, nClauses);
                 }
@@ -67,13 +67,16 @@ int driver::parse() {
                 std::istringstream ss(line);
                 auto& s = *solver;
                 int size = 0, literal = 0;
+                cout << "c ";
                 do {                     // for each clause in the file
                     if (ss >> literal) { // !in.fail()
+                        if (literal == 0)
+                            break;
                         s.buffer[size++] = literal;
-                        // cout << literal << " ";
+                        cout << literal << " ";
                     }
                 } while (ss.good());
-                // cout << "\n";
+                cout << "\n";
                 if (!ss.eof())
                     throw Fatal(
                         "I/O error or bad data during clause extraction");
@@ -87,8 +90,7 @@ int driver::parse() {
                 if ((size == 1) && !s.false_[-clause[0]]) {
                     s.assign(clause, 1);
                 } // Directly assign new units (forced = 1)
-                size = 0;
-            } // Reset buffer
+            }     // Reset buffer
         }
 
     } // End While

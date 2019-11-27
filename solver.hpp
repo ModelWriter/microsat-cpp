@@ -9,10 +9,11 @@
 
 #include <memory>
 
+constexpr int mem_max = 1u << 20u; // the initial maximum memory
+constexpr int ave_max = 1u << 24u; // the initial average
+
 namespace microsat {
 
-constexpr int mem_max = 1 << 20; // the initial maximum memory
-constexpr int ave_max = 1 << 24; // the initial average
 // ------------------------------------------------------------------------
 enum { END = -9, UNSAT = 0, SAT = 1, MARK = 2, IMPLIED = 6 };
 // -----------------------------------------------------------------------------
@@ -56,7 +57,8 @@ class Solver {
     int* getMemory(int mem_size); // Allocate memory of size mem_size
 
   public:
-    Solver(int n, int m);
+    // The code assumes that there is at least one variable
+    explicit Solver(int vars = 1, int clauses = 0);
     // Adds a clause stored in *in of size size
     int* addClause(int* in, int size, int irr);
     // Adds a watch pointer to a clause containing lit

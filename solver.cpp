@@ -1,7 +1,8 @@
 //  ----------------------------------------------------------------------------
 //  Implementation file for the solver class.                         solver.cpp
-//  Created by Ferhat Erata <ferhat.erata@yale.edu> on November 25, 2019.
-//  Copyright (c) 2019 Yale University. All rights reserved.
+//  The MIT License
+//  Copyright (c) 2014-2018 Marijn Heule
+//  Modified by Ferhat Erata <ferhat.erata@yale.edu> on November 26, 2019.
 // -----------------------------------------------------------------------------
 
 #include "solver.hpp"
@@ -15,8 +16,8 @@ Solver::Solver(int n, int m)
     : nVars(n), nClauses(m), db(std::make_unique<int[]>(mem_max)) {
     //    cout << mem_max << endl;
     model = getMemory(n + 1);      // Full assignment of the variables
-    prev = getMemory(n + 1);       // Previous variable in the heuristic order
     next = getMemory(n + 1);       // Next variable in the heuristic order
+    prev = getMemory(n + 1);       // Previous variable in the heuristic order
     buffer = getMemory(n);         // A buffer to store a temporary clause
     reason = getMemory(n + 1);     // Array of clauses
     falseStack = getMemory(n + 1); // Stack of falsified literals
@@ -125,7 +126,7 @@ void Solver::bump(int literal) {
     if (false_[literal] != IMPLIED) {
         // MARK the literal as involved if not a top-level unit
         false_[literal] = MARK;
-        int var = abs(literal);
+        int var = std::abs(literal);
         // In case var is not already the head of the list
         if (var != head) {
             prev[next[var]] = prev[var]; // Update the prev link, and

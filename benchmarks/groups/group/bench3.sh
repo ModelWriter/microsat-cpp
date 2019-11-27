@@ -6,14 +6,19 @@ START=$(date +%s)
 c=0
 s=0
 w=0
-
+# ../../.././microsat++
+# minisat
+# ../../.././microsat
+solver="../../.././microsat++"
 fname="bench3"
-if [ ! -d $fname ]; then
+if [ -d $fname ]; then
+  rm $fname/*
+else
   mkdir $fname
 fi
 
 for i in $(cat name5); do
-  ../../.././microsat++ ../../bench3/$i >results 2>&1
+  $solver ../../bench3/$i >results 2>&1
   if grep -q "UNSATISFIABLE" results; then
     echo "$i Pass!"
     let "c+=1"
