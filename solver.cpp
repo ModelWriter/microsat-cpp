@@ -12,9 +12,8 @@ using namespace microsat;
 
 // -----------------------------------------------------------------------------
 // Default constructor that initializes the data structures
-Solver::Solver(int n, int m)
-    : nVars(n), nClauses(m), db(std::make_unique<int[]>(mem_max)) {
-    //    cout << mem_max << endl;
+Solver::Solver(int n, int m) : nVars(n), nClauses(m), db(new int[mem_max]) {
+    cout << mem_max << endl;
     model = getMemory(n + 1);      // Full assignment of the variables
     next = getMemory(n + 1);       // Next variable in the heuristic order
     prev = getMemory(n + 1);       // Previous variable in the heuristic order
@@ -53,14 +52,14 @@ int* Solver::getMemory(const int mem_size) {
                     mem_used + mem_size, mem_max);
     }
     // Compute a pointer to the new memory location
-    int* store = db.get() + mem_used;
+    int* store = db + mem_used;
     mem_used += mem_size; // Update the size of the used memory
     return store;
 }
 
 // -----------------------------------------------------------------------------
 // Adds a clause stored in *in of size size
-int* Solver::addClause(int* in, int size, int irr) {
+int* Solver::addClause(int*& in, int size, int irr) {
     // Store a pointer to the beginning of the clause
     int i, used = mem_used;
     // Allocate memory for the clause in the database
@@ -98,7 +97,7 @@ void Solver::unassign(int lit) { false_[lit] = 0; }
 // -----------------------------------------------------------------------------
 // Perform a restart (i.e., unassign all variables)
 void Solver::restart() {
-    // Remove all unforced false lits from falseStack
+    // Remove all unforced false literals from falseStack
     while (assigned > forced)
         unassign(*(--assigned));
     // Reset the processed pointer
@@ -107,7 +106,7 @@ void Solver::restart() {
 
 // -----------------------------------------------------------------------------
 // Make the first literal of the reason true
-void Solver::assign(int* reason_, int forced_) {
+void Solver::assign(const int* reason_, int forced_) {
     // Let lit be the first literal in the reason
     int lit = reason_[0];
     // Mark lit as true and IMPLIED if forced
@@ -115,7 +114,7 @@ void Solver::assign(int* reason_, int forced_) {
     // Push it on the assignment stack
     *(assigned++) = -lit;
     // Set the reason clause of lit
-    reason[std::abs(lit)] = 1 + (int)((reason_)-db.get());
+    reason[std::abs(lit)] = 1 + (int)((reason_)-db);
     // Mark the literal as true in the model
     model[std::abs(lit)] = (lit > 0);
 }
@@ -139,14 +138,14 @@ void Solver::bump(int literal) {
 }
 
 // -----------------------------------------------------------------------------
-// Check if lit(eral) is implied by MARK literals
+// Check if literal is implied by MARK literals
 int Solver::implied(int literal) {
     // If checked before return old result
     if (false_[literal] > MARK)
         return (false_[literal] & MARK);
     if (!reason[abs(literal)])
         return 0; // In case literal is a decision, it is not implied
-    int* p = (db.get() + reason[abs(literal)] - 1); // Get the reason of literal
+    int* p = (db + reason[abs(literal)] - 1); // Get the reason of literal
     // While there are literals in the reason, recursively check if non-MARK
     // literals are implied
     while (*(++p))
@@ -176,10 +175,10 @@ void Solver::reduceDB(int k) {
         while (*watch != END)
             // Remove the watch if it points to a lemma
             if (*watch < mem_fixed)
-                watch = (db.get() + *watch);
+                watch = (db + *watch);
             // Otherwise (meaning an input clause) go to next watch
             else
-                *watch = db.get()[*watch];
+                *watch = db[*watch];
     }
     // Virtually remove all lemmas
     int old_used = mem_used;
@@ -189,21 +188,23 @@ void Solver::reduceDB(int k) {
         // Get the lemma to which the head is pointing
         int count = 0, head_ = i;
         // Count the number of literals
-        while (db.get()[i]) {
-            int literal = db.get()[i++];
+        while (db[i]) {
+            int literal = db[i++];
             // That are satisfied by the current model
             if ((literal > 0) == model[abs(literal)])
                 count++;
         }
         // If the latter is smaller than k, add it back
-        if (count < k)
-            addClause(db.get() + head_, i - head, 0);
+        if (count < k) {
+            auto ref = db + head_;
+            addClause(ref, i - head, 0);
+        }
     }
 }
 
 // -----------------------------------------------------------------------------
 // Compute a resolvent from falsified clause
-int* Solver::analyze(int* clause) {
+int* Solver::analyze(int*& clause) {
     // Bump restarts and update the statistic
     res++;
     nConflicts++;
@@ -222,7 +223,7 @@ int* Solver::analyze(int* clause) {
                 if (!reason[abs(*check)])
                     goto build;
             // Get the reason and ignore first literal
-            clause = db.get() + reason[std::abs(*assigned)];
+            clause = db + reason[std::abs(*assigned)];
             // MARK all literals in reason
             while (*clause)
                 bump(*(clause++));
@@ -234,7 +235,7 @@ int* Solver::analyze(int* clause) {
 // Build conflict clause; Empty the clause buffer
 build:;
     int size = 0;
-    int lbd = 0;
+    signed lbd = 0;
     int flag = 0;
     // Loop from tail to front
     int* p = processed = assigned;
@@ -292,7 +293,7 @@ int Solver::propagate() {
             // Let's assume that the clause is unit
             int i, unit = 1;
             // Get the clause from db
-            int* clause = (db.get() + *watch + 1);
+            int* clause = (db + *watch + 1);
             // Set the pointer to the first literal in the clause
             if (clause[-2] == 0)
                 clause++;
@@ -310,13 +311,13 @@ int Solver::propagate() {
                     int store = *watch;
                     unit = 0;
                     // Remove the watch from the list of lit
-                    *watch = db.get()[*watch];
+                    *watch = db[*watch];
                     addWatch(clause[1], store);
                 }       // Add the watch to the list of clause[1]
             if (unit) { // If the clause is indeed unit
                 clause[1] = lit;
                 // Place lit at clause[1] and update next watch
-                watch = (db.get() + *watch);
+                watch = (db + *watch);
                 // If the other watched literal is satisfied continue
                 if (false_[-clause[0]])
                     continue;
@@ -326,7 +327,7 @@ int Solver::propagate() {
                     assign(clause, forced_);
                 } else {
                     // Found a root level conflict -> UNSAT
-                    if (forced)
+                    if (forced_)
                         return UNSAT;
                     // Analyze the conflict return a conflict clause
                     int* lemma = analyze(clause);
@@ -339,7 +340,7 @@ int Solver::propagate() {
             }
         }
     } // Assign the conflict clause as a unit
-    if (forced)
+    if (forced_)
         forced = processed; // Set forced if applicable
     return SAT;             // Finally, no conflict was found
 }

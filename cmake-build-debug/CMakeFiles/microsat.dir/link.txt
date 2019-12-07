@@ -1,0 +1,1 @@
+/usr/bin/c++  -g   CMakeFiles/microsat.dir/solver.cpp.o CMakeFiles/microsat.dir/run.cpp.o  -o microsat 

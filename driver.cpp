@@ -14,11 +14,13 @@ using namespace microsat;
 // -----------------------------------------------------------------------------
 //
 driver::driver(std::string file) : filename(std::move(file)) {
-    if (parse() == UNSAT)
+    if (parse() == UNSAT) {
         std::cout << "s UNSATISFIABLE\n";
+    }
     // Solve without limit (number of conflicts)
-    else if (solver->solve() == UNSAT)
+    else if (solver->solve() == UNSAT) {
         std::cout << "s UNSATISFIABLE\n";
+    }
     // And print whether the formula has a solution
     else {
         std::cout << "s SATISFIABLE\n";
