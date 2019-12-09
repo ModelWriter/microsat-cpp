@@ -7,8 +7,7 @@ c=0
 s=0
 w=0
 # ../../.././microsat++
-# minisat
-# ../../.././microsat
+# z3
 solver="../../.././microsat++"
 fname="bench2"
 if [ -d $fname ]; then
@@ -19,7 +18,7 @@ fi
 
 for i in $(cat name3); do
   $solver ../../bench2/sat/$i >results 2>&1
-  if (grep -q "[^N]SATISFIABLE" results) || (grep -q "^SATISFIABLE" results); then
+  if (grep -q "[^n]sat" results) || (grep -q "^sat" results); then
     echo "$i Pass!"
     let "c+=1"
     let "s+=1"
@@ -36,7 +35,7 @@ done
 
 for i in $(cat name4); do
   $solver ../../bench2/unsat/$i >results 2>&1
-  if grep -q "UNSATISFIABLE" results; then
+  if grep -q "unsat" results; then
     echo "$i Pass!"
     let "c+=1"
     let "s+=1"

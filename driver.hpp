@@ -7,6 +7,17 @@
 #ifndef MICROSAT_DRIVER_HPP
 #define MICROSAT_DRIVER_HPP
 
+// Use -DDEBUG on the g++ command line to build the debug version
+#ifdef DEBUG
+#define P(a) cout << a;
+
+#else
+// alternative way to define them:
+#define DEBUG 0
+#define P(a)
+
+#endif
+
 #include "solver.hpp"
 #include <utility>
 

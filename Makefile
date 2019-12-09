@@ -18,7 +18,7 @@ clean:
 #-----------------------------------------------------------
 # Dependencies
 # c++ -MM *.cpp >> Makefile
-driver.o: driver.cpp driver.hpp solver.hpp tools.hpp
-main.o: main.cpp driver.hpp solver.hpp tools.hpp
-solver.o: solver.cpp solver.hpp tools.hpp
+driver.o: driver.cpp driver.hpp solver.hpp memory.hpp tools.hpp
+main.o: main.cpp driver.hpp solver.hpp memory.hpp tools.hpp
+solver.o: solver.cpp solver.hpp memory.hpp tools.hpp
 tools.o: tools.cpp tools.hpp

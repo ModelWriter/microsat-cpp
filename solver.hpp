@@ -35,8 +35,7 @@ class Solver {
     // -------------------------------------------------------------------------
     int mem_fixed = 0; // ?
     // -------------------------------------------------------------------------
-    // initial database
-    Memory<int> mem;
+    Memory<int> mem; // initial database
     std::vector<int, Allocator<int>> v_model{Allocator<int>{mem}};
     std::vector<int, Allocator<int>> v_prev{Allocator<int>{mem}};
     std::vector<int, Allocator<int>> v_next{Allocator<int>{mem}};

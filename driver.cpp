@@ -15,16 +15,15 @@ using namespace microsat;
 //
 driver::driver(std::string file) : filename(std::move(file)) {
     if (parse() == UNSAT) {
-        std::cout << "s UNSATISFIABLE\n";
+        std::cout << "unsat";
     }
     // Solve without limit (number of conflicts)
     else if (solver->solve() == UNSAT) {
-        std::cout << "s UNSATISFIABLE\n";
+        std::cout << "unsat";
     }
     // And print whether the formula has a solution
     else {
-        std::cout << "s SATISFIABLE\n";
-        std::cout << "c model: ";
+        std::cout << "sat ";
         for (int i = 1; i <= solver->nVars; i++) {
             if (solver->model[i])
                 std::cout << i << " ";
@@ -35,13 +34,11 @@ driver::driver(std::string file) : filename(std::move(file)) {
     }
     // Print the statistics
 
-    std::cout
-        << "c--------------------------------------------------------------\n"
-        << "c statistics of " << filename << ":\n"
-        << "c [ mem_used: " << solver->mem_used()
-        << ", conflicts: " << solver->nConflicts
-        << ", lemmas: " << solver->nLemmas
-        << ", max_lemmas: " << solver->maxLemmas << " ]";
+    P("c--------------------------------------------------------------\n"
+      << "c statistics of " << filename << ":\n"
+      << "c [ mem_used: " << solver->mem_used() << ", conflicts: "
+      << solver->nConflicts << ", lemmas: " << solver->nLemmas
+      << ", max_lemmas: " << solver->maxLemmas << " ]");
 }
 
 // -----------------------------------------------------------------------------
@@ -62,7 +59,7 @@ int driver::parse() {
                     std::istringstream ss(str);
                     if (!(ss >> nVars >> nClauses)) // extract vars and clausesS
                         throw Fatal("can't extract nVars and nClauses!");
-                    cout << "c " << nVars << " " << nClauses << "\n";
+                    P("c p cnf " << nVars << " " << nClauses);
                     // late binding of the solver
                     solver = std::make_unique<Solver>(nVars, nClauses);
                 }
@@ -70,16 +67,16 @@ int driver::parse() {
                 std::istringstream ss(line);
                 auto& s = *solver;
                 int size = 0, literal = 0;
-                cout << "c ";
+                P("c ");
                 do {                     // for each clause in the file
                     if (ss >> literal) { // !in.fail()
                         if (literal == 0)
                             break;
                         s.buffer[size++] = literal;
-                        cout << literal << " ";
+                        P(literal << " ");
                     }
                 } while (ss.good());
-                cout << "\n";
+                P("\n");
                 if (!ss.eof())
                     throw Fatal(
                         "I/O error or bad data during clause extraction");

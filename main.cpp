@@ -25,7 +25,7 @@ void run(int argc, char* argv[]) {
 
 // -----------------------------------------------------------------------------
 int main(int argc, char* argv[]) {
-    banner();
+    P(banner());
     try {
         run(argc, argv);
     } catch (Fatal& e) {
@@ -39,6 +39,6 @@ int main(int argc, char* argv[]) {
         std::cout << "Uncaught exception..." << std::endl;
         throw;
     }
-    bye();
+    P(bye());
     return 0;
 }

@@ -1,11 +1,24 @@
 //  ----------------------------------------------------------------------------
-//  Header file for the Memory class.        memory.hpp
+//  Header file for the Memory class.                                 memory.hpp
 //  Created by Ferhat Erata <ferhat.erata@yale.edu> on December 09, 2019.
 //  Copyright (c) 2019 Yale University. All rights reserved.
 // -----------------------------------------------------------------------------
 
 #ifndef MICROSAT_MEMORY_HPP
 #define MICROSAT_MEMORY_HPP
+
+// Use -DM_DEBUG on the g++ command line to build the debug version
+#ifdef M_DEBUG
+// Macro to print a variable
+#define PRINT(a) cout << " [" << a << " ]" << endl;
+
+#else
+// alternative way to define them:
+#define M_DEBUG 0
+#define PRINT(a)
+
+#endif
+
 
 #include "tools.hpp"
 #include <iostream>

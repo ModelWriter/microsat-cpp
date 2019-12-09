@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 add_compile_options(-o2 -g -Wall -Wpedantic -Wnull-dereference -Wnon-virtual-dtor)
 
 #add_definitions(-DDEBUG)
+#add_definitions(-DM_DEBUG)
 
 add_executable(microsat++
         main.cpp

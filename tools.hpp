@@ -18,9 +18,6 @@
     cout << #a " = " << a << endl;                                             \
     a
 
-// Macro to print a variable
-#define PRINT(a) cout << " [" << a << " ]" << endl;
-
 // Macro to print a key and value
 #define kv(a, b) cout << "[" #a << "\t= " << b << " ]" << endl;
 
@@ -39,8 +36,6 @@
 #define v(a) a
 
 #define p(a) a
-
-#define PRINT(a)
 
 #define kv(a, b)
 
