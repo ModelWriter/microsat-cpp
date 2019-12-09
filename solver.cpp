@@ -1,7 +1,7 @@
 //  ----------------------------------------------------------------------------
 //  Implementation file for the solver class.                         solver.cpp
 //  The MIT License
-//  Copyright (c) 2014-2018 Marijn Heule
+//  Copyright (c) 2014-2018 Marijn Heule (C Version)
 //  Modified by Ferhat Erata <ferhat.erata@yale.edu> on November 26, 2018.
 // -----------------------------------------------------------------------------
 
@@ -12,23 +12,32 @@ using namespace microsat;
 
 // -----------------------------------------------------------------------------
 // Default constructor that initializes the data structures
-Solver::Solver(int n, int m) : nVars(n), nClauses(m), db(new int[mem_max]) {
-    model = getMemory(n + 1);      // Full assignment of the variables
-    next = getMemory(n + 1);       // Next variable in the heuristic order
-    prev = getMemory(n + 1);       // Previous variable in the heuristic order
-    buffer = getMemory(n);         // A buffer to store a temporary clause
-    reason = getMemory(n + 1);     // Array of clauses
-    falseStack = getMemory(n + 1); // Stack of falsified literals
+Solver::Solver(int n, int m) : nVars(n), nClauses(m), mem(mem_max) {
+    db = mem.get_raw_memory();
+    v_model.reserve(n + 1);       // Full assignment of the variables
+    v_next.reserve(n + 1);        // Next variable in the heuristic order
+    v_prev.reserve(n + 1);        // Previous variable in the heuristic order
+    v_buffer.reserve(n);          // A buffer to store a temporary clause
+    v_reason.reserve(n + 1);      // Array of clauses
+    v_false_stack.reserve(n + 1); // Stack of falsified literals
 
-    forced = falseStack;    // Points inside *falseStack at first decision
-    processed = falseStack; // Points inside *falseStack at first unprocessed
-    assigned = falseStack;  // Points inside *falseStack at last unprocessed
+    model = v_model.data();
+    next = v_next.data();
+    prev = v_prev.data();
+    buffer = v_buffer.data();
+    reason = v_reason.data();
+    false_stack = v_false_stack.data();
 
-    false_ = getMemory(2 * n + 1); // Labels for variables, non-zero means false
-    false_ += n;
-    first = getMemory(2 * n + 1); // Offset of the first watched clause
-    first += n;
-    db[mem_used++] = 0; // Make sure there is a 0 before the clauses are loaded.
+    forced = false_stack;    // Points inside *falseStack at first decision
+    processed = false_stack; // Points inside *falseStack at first unprocessed
+    assigned = false_stack;  // Points inside *falseStack at last unprocessed
+
+    // Labels for variables, non-zero means false
+    false_ = mem.allocate(2 * n + 1) + n; // having both polarity
+    // Offset of the first watched clause
+    first = mem.allocate(2 * n + 1) + n; // having both polarity
+    // Make sure there is a 0 before the clauses are loaded.
+    *mem.allocate(1) = 0;
 
     // Initialize the main data structures:
     for (int i = 1; i <= n; i++) { // for each variable
@@ -40,30 +49,17 @@ Solver::Solver(int n, int m) : nVars(n), nClauses(m), db(new int[mem_max]) {
         false_[-i] = false_[i] = 0; // the false array,
         first[i] = first[-i] = END; // and first (watch pointers).
     }
+    // decision heuristics
     head = n; // Initialize the head of the double-linked list
-}
-
-// -----------------------------------------------------------------------------
-// Allocate memory of size mem_size
-int* Solver::getMemory(const int mem_size) {
-    // In case the code is used within a code base
-    if (mem_used + mem_size > mem_max) {
-        throw Fatal("out of memory: (mem_used) %i > %i (mem_max)",
-                    mem_used + mem_size, mem_max);
-    }
-    // Compute a pointer to the new memory location
-    int* store = db + mem_used;
-    mem_used += mem_size; // Update the size of the used memory
-    return store;
 }
 
 // -----------------------------------------------------------------------------
 // Adds a clause stored in *in of size size
 int* Solver::addClause(int* in, int size, int irr) {
     // Store a pointer to the beginning of the clause
-    int clause_head = mem_used;
+    int clause_head = mem_used();
     // Allocate memory for the clause in the database
-    int* clause = getMemory(size + 2 + 1);
+    int* clause = mem.allocate(size + 2 + 1);
     // shift the head of the clause because the first two for watch pointers
     clause += 2;
     // If the clause is not unit, then add two watch pointers to the data
@@ -74,13 +70,10 @@ int* Solver::addClause(int* in, int size, int irr) {
     }
     // Copy the clause from the buffer to the database
     std::copy(in, in + size, clause);
-    //    int i;
-    //    for (i = 0; i < size; i++)
-    //        clause[i] = in[i];
     clause[size] = 0;
     // Update the statistics
     if (irr)
-        mem_fixed = mem_used;
+        mem_fixed = mem_used();
     else
         nLemmas++;
     // Return the pointer to the clause in the database
@@ -188,8 +181,8 @@ void Solver::reduceDB(int k) {
                 *watch = db[*watch];
     }
     // Virtually remove all lemmas
-    int old_used = mem_used;
-    mem_used = mem_fixed;
+    int old_used = mem_used();
+    mem.resize(mem_fixed);
     // While the old memory contains lemmas
     for (int i = mem_fixed + 2; i < old_used; i += 3) {
         // Get the lemma to which the head is pointing
@@ -410,4 +403,4 @@ int Solver::solve() {
 
 // -----------------------------------------------------------------------------
 //
-bool Solver::restarting() { return fast > (slow / 100) * 125; };
+bool Solver::restarting() { return fast > (slow / 100) * 125; }

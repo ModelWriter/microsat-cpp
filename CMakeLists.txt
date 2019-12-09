@@ -3,7 +3,7 @@ project(microsat++)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_compile_options(-O2 -g -Wall -Wextra -Wpedantic -Wnull-dereference -Wnon-virtual-dtor)
+add_compile_options(-o2 -g -Wall -Wpedantic -Wnull-dereference -Wnon-virtual-dtor)
 
 #add_definitions(-DDEBUG)
 

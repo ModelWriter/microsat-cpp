@@ -10,7 +10,7 @@
 #include <vector>
 
 using namespace std;
-#define ITERATIONS 50000
+#define ITERATIONS 5
 //-------------------------------------------------------------------
 int main() {
     cout << "Testing lists with " << ITERATIONS << " numbers\n" << endl;
@@ -22,8 +22,7 @@ int main() {
         int sz = ITERATIONS;
         int* array = new int[ITERATIONS * 5];
         for (int k = 0; k < sz; k++) {
-            //            array[k] = rand();
-            array[k] = 1; // Much time is spent in rand(); try with constants
+            array[k] = 1;
         }
         delete[] array;
         auto end = std::chrono::system_clock::now();
@@ -76,6 +75,36 @@ int main() {
             vec8.reserve(sz / 3);
             for (int n = 0; n < sz; ++n)
                 vec8.push_back(n);
+
+            vector<int> vec9;
+            vec9.reserve(sz / 3);
+            for (int n = 0; n < sz; ++n)
+                vec9.push_back(n);
+
+            vector<int> vec10;
+            vec10.reserve(sz / 3);
+            for (int n = 0; n < sz; ++n)
+                vec10.push_back(n);
+
+            vector<int> vec11;
+            vec11.reserve(sz / 3);
+            for (int n = 0; n < sz; ++n)
+                vec11.push_back(n);
+
+            vector<int> vec12;
+            vec12.reserve(sz / 3);
+            for (int n = 0; n < sz; ++n)
+                vec12.push_back(n);
+
+            vector<int> vec13;
+            vec13.reserve(sz / 3);
+            for (int n = 0; n < sz; ++n)
+                vec13.push_back(n);
+
+            vector<int> vec14;
+            vec14.reserve(sz / 3);
+            for (int n = 0; n < sz; ++n)
+                vec14.push_back(n);
         }
         auto end = std::chrono::system_clock::now();
         std::chrono::duration<double> secs = end - start;
@@ -86,7 +115,7 @@ int main() {
         auto start = std::chrono::system_clock::now();
         int sz = ITERATIONS;
         using namespace microsat;
-        Memory<int> memory{sz * 5};
+        Memory<int> memory{sz * 6};
         {
             std::vector<int, Allocator<int>> v1{Allocator<int>{memory}};
             v1.reserve(sz);
@@ -98,27 +127,45 @@ int main() {
             for (int n = 1; n <= sz; ++n)
                 v2.push_back(n);
 
+//            v(v2.clear());
+//            v(std::cout << v2.empty() << std::endl);
+
             std::vector<int, Allocator<int>> v3{Allocator<int>{memory}};
             v3.reserve(sz);
             for (int n = 1; n <= sz; ++n)
                 v3.push_back(n * 3);
 
-            std::vector<int, Allocator<int>> v4{Allocator<int>{memory}};
-            v4.reserve(sz);
-            for (int n = 1; n <= sz; ++n)
-                v4.push_back(n * 3);
+            int* tp = memory.allocate(5);
+            for (int n = 0; n < 5; ++n)
+                tp[n] = n;
 
-            std::vector<int, Allocator<int>> v5{Allocator<int>{memory}};
-            v5.reserve(sz);
+            //            auto v4 = Memory<int>::create_vector(tp, 5);
+            //            for (int n = 1; n <= sz; ++n)
+            //                v4.push_back(n - sz);
+            //            std::cout << "\n";
+
+            int* tp1 = memory.allocate(5);
+            for (int n = 0; n < 5; ++n)
+                tp1[n] = n;
+
+            //            auto v5 = Memory<int>::make_vector(tp1, 5);
+            //            std::cout << "printing vector:\n";
+            //            for (auto i : v5) {
+            //                std::cout << i << " ";
+            //            }
+            //            std::cout << "\n";
+
+            std::vector<int, Allocator<int>> v6{Allocator<int>{memory}};
+            v6.reserve(sz);
             for (int n = 1; n <= sz; ++n)
-                v5.push_back(n * 3);
+                v6.push_back(n);
 
             //            v2.reserve(sz);
             //            for (int n = 1; n <= sz; ++n)
             //                v2.push_back(sz + n);
-
+            //
             //            for (int i = 0; i < memory.mem_used(); ++i) {
-            //                std::cout << memory.mem()[i] << "\n";
+            //                std::cout << memory.get_raw_memory()[i] << "\n";
             //            }
         }
         cout << "Memory::used " << memory.mem_used() << endl;

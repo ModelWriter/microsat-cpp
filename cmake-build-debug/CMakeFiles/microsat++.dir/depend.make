@@ -3,14 +3,21 @@
 
 CMakeFiles/microsat++.dir/driver.cpp.o: ../driver.cpp
 CMakeFiles/microsat++.dir/driver.cpp.o: ../driver.hpp
+CMakeFiles/microsat++.dir/driver.cpp.o: ../memory.hpp
 CMakeFiles/microsat++.dir/driver.cpp.o: ../solver.hpp
 CMakeFiles/microsat++.dir/driver.cpp.o: ../tools.hpp
 
 CMakeFiles/microsat++.dir/main.cpp.o: ../driver.hpp
 CMakeFiles/microsat++.dir/main.cpp.o: ../main.cpp
+CMakeFiles/microsat++.dir/main.cpp.o: ../memory.hpp
 CMakeFiles/microsat++.dir/main.cpp.o: ../solver.hpp
 CMakeFiles/microsat++.dir/main.cpp.o: ../tools.hpp
 
+CMakeFiles/microsat++.dir/memory.cpp.o: ../memory.cpp
+CMakeFiles/microsat++.dir/memory.cpp.o: ../memory.hpp
+CMakeFiles/microsat++.dir/memory.cpp.o: ../tools.hpp
+
+CMakeFiles/microsat++.dir/solver.cpp.o: ../memory.hpp
 CMakeFiles/microsat++.dir/solver.cpp.o: ../solver.cpp
 CMakeFiles/microsat++.dir/solver.cpp.o: ../solver.hpp
 CMakeFiles/microsat++.dir/solver.cpp.o: ../tools.hpp

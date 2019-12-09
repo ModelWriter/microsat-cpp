@@ -4,14 +4,21 @@
 CMakeFiles/microsat++.dir/driver.cpp.o
  /home/ferhat/git/microsat++/driver.cpp
  /home/ferhat/git/microsat++/driver.hpp
+ /home/ferhat/git/microsat++/memory.hpp
  /home/ferhat/git/microsat++/solver.hpp
  /home/ferhat/git/microsat++/tools.hpp
 CMakeFiles/microsat++.dir/main.cpp.o
  /home/ferhat/git/microsat++/driver.hpp
  /home/ferhat/git/microsat++/main.cpp
+ /home/ferhat/git/microsat++/memory.hpp
  /home/ferhat/git/microsat++/solver.hpp
  /home/ferhat/git/microsat++/tools.hpp
+CMakeFiles/microsat++.dir/memory.cpp.o
+ /home/ferhat/git/microsat++/memory.cpp
+ /home/ferhat/git/microsat++/memory.hpp
+ /home/ferhat/git/microsat++/tools.hpp
 CMakeFiles/microsat++.dir/solver.cpp.o
+ /home/ferhat/git/microsat++/memory.hpp
  /home/ferhat/git/microsat++/solver.cpp
  /home/ferhat/git/microsat++/solver.hpp
  /home/ferhat/git/microsat++/tools.hpp

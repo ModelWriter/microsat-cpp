@@ -7,7 +7,8 @@
 #ifndef MICROSAT_SOLVER_HPP
 #define MICROSAT_SOLVER_HPP
 
-#include <memory>
+#include "memory.hpp"
+#include <vector>
 
 namespace microsat {
 
@@ -18,14 +19,13 @@ class Solver {
     friend class driver;
 
   private:
-    const static int mem_max = INT32_MAX;
+    const static int mem_max = 1u << 30u; // the initial maximum memory
     // 2147483647 INT32_MAX
     // 1073741824 1u << 30u
-    // 1u << 30u; // the initial maximum memory
+    // 1u << 30u;
     const static int ave_max = 1u << 24u; // the initial average
     const int nVars;                      // The number of variables
     const int nClauses;                   // The number of clauses
-    int mem_used = 0;     // The number of integers allocated in the DB
     int nLemmas = 0;      // The number of learned (redundant) clauses
     int nConflicts = 0;   // Under of conflicts which is used to updates scores
     int maxLemmas = 2000; // Initial maximum number of learnt clauses
@@ -36,32 +36,35 @@ class Solver {
     int mem_fixed = 0; // ?
     // -------------------------------------------------------------------------
     // initial database
-    int* db = nullptr;
+    Memory<int> mem;
+    std::vector<int, Allocator<int>> v_model{Allocator<int>{mem}};
+    std::vector<int, Allocator<int>> v_prev{Allocator<int>{mem}};
+    std::vector<int, Allocator<int>> v_next{Allocator<int>{mem}};
+    std::vector<int, Allocator<int>> v_buffer{Allocator<int>{mem}};
+    std::vector<int, Allocator<int>> v_reason{Allocator<int>{mem}};
+    std::vector<int, Allocator<int>> v_false_stack{Allocator<int>{mem}};
+    int* db = nullptr;          // First pointer
+    int* model = nullptr;       // Full assignment of the vars; initially false
+    int* next = nullptr;        // Next variable in the heuristic order
+    int* prev = nullptr;        // Previous variable in the heuristic order
+    int* buffer = nullptr;      // A buffer to store a temporary clause
+    int* reason = nullptr;      // Array of clauses
+    int* false_stack = nullptr; // Stack of falsified literals; never changes
     // -------------------------------------------------------------------------
-    int* model = nullptr;  // Full assignment of the variables
-                           // (initially false)
-    int* prev = nullptr;   // Previous variable in the heuristic order
-    int* next = nullptr;   // Next variable in the heuristic order
-    int* buffer = nullptr; // A buffer to store a temporary clause
-    int* reason = nullptr; // Array of clauses
-    // -------------------------------------------------------------------------
-    int* falseStack = nullptr; // Stack of falsified literals; never changes
-    int* forced = nullptr;     // Points inside *falseStack at first decision
-                               // (unforced literal)
-    int* processed = nullptr;  // Points inside *falseStack at first unprocessed
-                               // literal
-    int* assigned = nullptr;   // Points inside *falseStack at last unprocessed
-                               // literal
+    int* forced = nullptr;    // Points inside *falseStack at first decision
+                              // (unforced literal)
+    int* processed = nullptr; // Points inside *falseStack at first unprocessed
+                              // literal
+    int* assigned = nullptr;  // Points inside *falseStack at last unprocessed
+                              // literal
     // -------------------------------------------------------------------------
     int* false_ = nullptr; // Labels for variables, non-zero means false
     int* first = nullptr;  // Offset of the first watched clause
     int head = 0;          // the head of the double-linked list
     int res = 0;           // restart counter ??
     // -------------------------------------------------------------------------
-    int* getMemory(int mem_size); // Allocate memory of size mem_size
 
   public:
-    ~Solver() { delete[] db; }
     // The code assumes that there is at least one variable
     explicit Solver(int vars = 1, int clauses = 0);
     // Adds a clause stored in *in of size size
@@ -91,6 +94,7 @@ class Solver {
 
     int* getModel() { return model; }
     int getVars() { return nVars; }
+    int mem_used() { return mem.mem_used(); }
 };
 
 } // namespace microsat
