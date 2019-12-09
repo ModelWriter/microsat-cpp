@@ -2,7 +2,7 @@
 //  Implementation file for the solver class.                         solver.cpp
 //  The MIT License
 //  Copyright (c) 2014-2018 Marijn Heule
-//  Modified by Ferhat Erata <ferhat.erata@yale.edu> on November 26, 2019.
+//  Modified by Ferhat Erata <ferhat.erata@yale.edu> on November 26, 2018.
 // -----------------------------------------------------------------------------
 
 #include "solver.hpp"
@@ -13,7 +13,6 @@ using namespace microsat;
 // -----------------------------------------------------------------------------
 // Default constructor that initializes the data structures
 Solver::Solver(int n, int m) : nVars(n), nClauses(m), db(new int[mem_max]) {
-    cout << mem_max << endl;
     model = getMemory(n + 1);      // Full assignment of the variables
     next = getMemory(n + 1);       // Next variable in the heuristic order
     prev = getMemory(n + 1);       // Previous variable in the heuristic order
@@ -32,12 +31,13 @@ Solver::Solver(int n, int m) : nVars(n), nClauses(m), db(new int[mem_max]) {
     db[mem_used++] = 0; // Make sure there is a 0 before the clauses are loaded.
 
     // Initialize the main data structures:
-    for (int i = 1; i <= n; i++) {
+    for (int i = 1; i <= n; i++) { // for each variable
+        // variable selection: which variable to assign next?
         prev[i] = i - 1;
         next[i - 1] = i; // the double-linked list for variable-move-to-front,
-        model[i] = 0;    // the model (phase-saving)
-        false_[-i] = 0;  // the false array,
-        false_[i] = 0;   //
+        // phase selection: assign variable to which phase (true or false)?
+        model[i] = 0;               // the model (phase-saving)
+        false_[-i] = false_[i] = 0; // the false array,
         first[i] = first[-i] = END; // and first (watch pointers).
     }
     head = n; // Initialize the head of the double-linked list
@@ -59,23 +59,27 @@ int* Solver::getMemory(const int mem_size) {
 
 // -----------------------------------------------------------------------------
 // Adds a clause stored in *in of size size
-int* Solver::addClause(int*& in, int size, int irr) {
+int* Solver::addClause(int* in, int size, int irr) {
     // Store a pointer to the beginning of the clause
-    int i, used = mem_used;
+    int clause_head = mem_used;
     // Allocate memory for the clause in the database
-    int* clause = getMemory(size + 3) + 2;
+    int* clause = getMemory(size + 2 + 1);
+    // shift the head of the clause because the first two for watch pointers
+    clause += 2;
     // If the clause is not unit, then add two watch pointers to the data
     // structure
-    if (size > 1) {
-        addWatch(in[0], used);
-        addWatch(in[1], used + 1);
+    if (size > 1) { // first two literal are watched
+        addWatch(in[0], clause_head);
+        addWatch(in[1], clause_head + 1);
     }
     // Copy the clause from the buffer to the database
-    for (i = 0; i < size; i++)
-        clause[i] = in[i];
-    clause[i] = 0;
+    std::copy(in, in + size, clause);
+    //    int i;
+    //    for (i = 0; i < size; i++)
+    //        clause[i] = in[i];
+    clause[size] = 0;
     // Update the statistics
-    if (irr) // ?
+    if (irr)
         mem_fixed = mem_used;
     else
         nLemmas++;
@@ -121,6 +125,11 @@ void Solver::assign(const int* reason_, int forced_) {
 
 // -----------------------------------------------------------------------------
 // Move the variable to the front of the decision list
+// bump variables occurring in learned clauses (strategy is to bump all
+// variables used to derive learned clause)
+// * Siege SAT solver [Ryan’04] used variable move to front (VMTF)
+// * bumped variables moved to head of doubly linked list
+// * search for unassigned variable starts at head
 void Solver::bump(int literal) {
     if (false_[literal] != IMPLIED) {
         // MARK the literal as involved if not a top-level unit
@@ -143,7 +152,7 @@ int Solver::implied(int literal) {
     // If checked before return old result
     if (false_[literal] > MARK)
         return (false_[literal] & MARK);
-    if (!reason[abs(literal)])
+    if (!reason[std::abs(literal)])
         return 0; // In case literal is a decision, it is not implied
     int* p = (db + reason[abs(literal)] - 1); // Get the reason of literal
     // While there are literals in the reason, recursively check if non-MARK
@@ -159,6 +168,7 @@ int Solver::implied(int literal) {
 
 // -----------------------------------------------------------------------------
 // Removes "less useful" lemmas from DB
+// Remove strategy
 void Solver::reduceDB(int k) {
     // Allow more lemmas in the future
     while (nLemmas > maxLemmas)
@@ -167,17 +177,14 @@ void Solver::reduceDB(int k) {
     nLemmas = 0;
     // Loop over the variables
     for (int i = -nVars; i <= nVars; i++) {
-        // Get the pointer to the first watched clause
         if (i == 0)
             continue;
+        // Get the pointer to the first watched clause
         int* watch = &first[i];
-        // As long as there are watched clauses
-        while (*watch != END)
-            // Remove the watch if it points to a lemma
-            if (*watch < mem_fixed)
+        while (*watch != END)       // As long as there are watched clauses
+            if (*watch < mem_fixed) // Remove the watch if it points to a lemma
                 watch = (db + *watch);
-            // Otherwise (meaning an input clause) go to next watch
-            else
+            else // Otherwise (meaning an input clause) go to next watch
                 *watch = db[*watch];
     }
     // Virtually remove all lemmas
@@ -191,26 +198,26 @@ void Solver::reduceDB(int k) {
         while (db[i]) {
             int literal = db[i++];
             // That are satisfied by the current model
-            if ((literal > 0) == model[abs(literal)])
+            if ((literal > 0) == model[std::abs(literal)])
                 count++;
         }
         // If the latter is smaller than k, add it back
         if (count < k) {
             auto ref = db + head_;
-            addClause(ref, i - head, 0);
+            addClause(ref, i - head, 0); // ToDo addClause
         }
     }
 }
 
 // -----------------------------------------------------------------------------
 // Compute a resolvent from falsified clause
-int* Solver::analyze(int*& clause) {
+int* Solver::analyze(int* clause) {
     // Bump restarts and update the statistic
     res++;
     nConflicts++;
     // MARK all literals in the falsified clause
     while (*clause)
-        bump(*(clause++));
+        bump(*(clause++)); // ToDo bump
     // Loop on variables on falseStack until the last decision
     while (reason[std::abs(*(--assigned))]) {
         // If the tail of the stack is MARK
@@ -220,35 +227,35 @@ int* Solver::analyze(int*& clause) {
             // Check for a MARK literal before decision
             while (false_[*(--check)] != MARK)
                 // Otherwise it is the first-UIP so break
-                if (!reason[abs(*check)])
+                if (!reason[std::abs(*check)])
                     goto build;
             // Get the reason and ignore first literal
             clause = db + reason[std::abs(*assigned)];
             // MARK all literals in reason
             while (*clause)
-                bump(*(clause++));
+                bump(*(clause++)); // ToDo bump
         }
         // Unassign the tail of the stack
-        unassign(*assigned);
+        unassign(*assigned); // ToDo unassign
     }
 
 // Build conflict clause; Empty the clause buffer
 build:;
     int size = 0;
-    signed lbd = 0;
+    int lbd = 0; // Literal Block Distance (LBD) of Glucose
     int flag = 0;
     // Loop from tail to front
     int* p = processed = assigned;
     // Only literals on the stack can be MARKed
     while (p >= forced) {
         // If MARKed and not implied
-        if ((false_[*p] == MARK) && !implied(*p)) {
+        if ((false_[*p] == MARK) && !implied(*p)) { // ToDo implied
             // Add literal to conflict clause buffer
             buffer[size++] = *p;
             flag = 1;
         }
         // Increase LBD for a decision with a true flag
-        if (!reason[abs(*p)]) {
+        if (!reason[std::abs(*p)]) {
             lbd += flag;
             flag = 0;
             // And update the processed pointer
@@ -258,6 +265,11 @@ build:;
         // Reset the MARK flag for all variables on the stack
         false_[*(p--)] = 1;
     }
+
+    // glucose level (LBD) of learned clause:
+    // * number of different decision levels in a learned clauses
+    // * calculated at the point the clause is learned during conflict analysis
+
     // Update the fast moving average
     fast -= fast >> 5;
     fast += lbd << 15;
@@ -268,20 +280,20 @@ build:;
     // Loop over all unprocessed literals
     while (assigned > processed)
         // Unassign all lits between tail & head
-        unassign(*(assigned--));
+        unassign(*(assigned--)); // ToDo unassign
     // Assigned now equal to processed
-    unassign(*assigned);
+    unassign(*assigned); // ToDo unassign
     // Terminate the buffer (and potentially print clause)s
     buffer[size] = 0;
     // Add new conflict clause to redundant db
-    return addClause(buffer, size, 0);
+    return addClause(buffer, size, 0); // ToDo addClause
 }
 
 // -----------------------------------------------------------------------------
 // Performs unit propagation
 int Solver::propagate() {
     // Initialize forced flag
-    int forced_ = reason[abs(*processed)];
+    int forced_ = reason[std::abs(*processed)];
     // While unprocessed false literals
     while (processed < assigned) {
         // Get first unprocessed literal
@@ -289,30 +301,30 @@ int Solver::propagate() {
         // Obtain the first watch pointer
         int* watch = &first[lit];
         // While there are watched clauses (watched by lit)
-        while (*watch != END) {
+        while (*watch != END) { // while (*watch != -9)
             // Let's assume that the clause is unit
-            int i, unit = 1;
+            bool unit = true;
             // Get the clause from db
-            int* clause = (db + *watch + 1);
+            int* clause = (db + *watch + 1); // it might be the first or second
             // Set the pointer to the first literal in the clause
-            if (clause[-2] == 0)
-                clause++;
+            // if this is the second watch literal, then forward the pointer...
+            if (clause[-2] == 0) // all clauses ends with a 0... even there is
+                clause++;        // a zero before the first clause....
             // Ensure that the other watched literal is in front
             if (clause[0] == lit)
                 clause[0] = clause[1];
             // Scan the non-watched literals
-            for (i = 2; unit && clause[i]; i++)
+            for (int i = 2; unit && clause[i]; i++)
                 // When clause[i] is not false, it is either true or unset
                 if (!false_[clause[i]]) {
                     // Swap literals
                     clause[1] = clause[i];
                     clause[i] = lit;
-                    // Store the old watch
-                    int store = *watch;
-                    unit = 0;
+                    int store = *watch; // Store the old watch
+                    unit = false;
                     // Remove the watch from the list of lit
                     *watch = db[*watch];
-                    addWatch(clause[1], store);
+                    addWatch(clause[1], store); // ToDo addWatch
                 }       // Add the watch to the list of clause[1]
             if (unit) { // If the clause is indeed unit
                 clause[1] = lit;
@@ -324,22 +336,23 @@ int Solver::propagate() {
                 // If the other watched literal is falsified,
                 if (!false_[clause[0]]) {
                     // A unit clause is found, and the reason is set
-                    assign(clause, forced_);
+                    assign(clause, forced_); // ToDo assign
                 } else {
                     // Found a root level conflict -> UNSAT
                     if (forced_)
                         return UNSAT;
                     // Analyze the conflict return a conflict clause
-                    int* lemma = analyze(clause);
+                    int* lemma = analyze(clause); // ToDo analyze
                     // In case a unit clause is found, set forced flag
                     if (!lemma[1])
                         forced_ = 1;
-                    assign(lemma, forced_);
+                    assign(lemma, forced_); // ToDo assign
                     break;
                 }
             }
-        }
-    } // Assign the conflict clause as a unit
+        } // end of while (*watch != END)
+    }
+    // Assign the conflict clause as a unit
     if (forced_)
         forced = processed; // Set forced if applicable
     return SAT;             // Finally, no conflict was found
@@ -356,23 +369,23 @@ int Solver::solve() {
         // Store nLemmas to see whether propagate adds lemmas
         int old_nLemmas = nLemmas;
         // Propagation returns UNSAT for a root level conflict
-        if (propagate() == UNSAT)
+        if (propagate() == UNSAT) // may generate a lemma through analyze()...
             return UNSAT;
         // If the last decision caused a conflict
         if (nLemmas > old_nLemmas) {
             // Reset the decision heuristic to head
             decision = head;
             // If fast average is substantially larger than slow average
-            if (fast > (slow / 100) * 125) {
+            if (restarting()) {
                 printf("c restarting after %i conflicts (%i %i) %i\n", res,
                        fast, slow, nLemmas > maxLemmas);
                 // Restart and update the averages
                 res = 0;
                 fast = (slow / 100) * 125;
-                restart();
+                restart(); // ToDo restart
                 // Reduce the DB when it contains too many lemmas
                 if (nLemmas > maxLemmas)
-                    reduceDB(6);
+                    reduceDB(6); // ToDo reduceDB
             }
         }
         // As long as the temporary decision is assigned
@@ -390,7 +403,11 @@ int Solver::solve() {
         // And push it on the assigned stack
         *(assigned++) = -decision;
         // Decisions have no reason clauses
-        decision = abs(decision);
+        decision = std::abs(decision);
         reason[decision] = 0;
     }
 }
+
+// -----------------------------------------------------------------------------
+//
+bool Solver::restarting() { return fast > (slow / 100) * 125; };

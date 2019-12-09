@@ -6,6 +6,20 @@
 
 #IncludeRegexTransform: 
 
+/home/ferhat/git/microsat++/driver.cpp
+driver.hpp
+/home/ferhat/git/microsat++/driver.hpp
+tools.hpp
+/home/ferhat/git/microsat++/tools.hpp
+utility
+-
+
+/home/ferhat/git/microsat++/driver.hpp
+solver.hpp
+/home/ferhat/git/microsat++/solver.hpp
+utility
+-
+
 /home/ferhat/git/microsat++/solver.cpp
 solver.hpp
 /home/ferhat/git/microsat++/solver.hpp

@@ -40,6 +40,7 @@ driver::driver(std::string file) : filename(std::move(file)) {
         << "c statistics of " << filename << ":\n"
         << "c [ mem_used: " << solver->mem_used
         << ", conflicts: " << solver->nConflicts
+        << ", lemmas: " << solver->nLemmas
         << ", max_lemmas: " << solver->maxLemmas << " ]";
 }
 

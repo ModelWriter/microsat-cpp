@@ -1,1 +1,1 @@
-/usr/bin/c++  -g   CMakeFiles/microsat++.dir/main.cpp.o CMakeFiles/microsat++.dir/tools.cpp.o CMakeFiles/microsat++.dir/solver.cpp.o CMakeFiles/microsat++.dir/driver.cpp.o  -o microsat++ 
+/usr/bin/c++  -g   CMakeFiles/microsat++.dir/main.cpp.o CMakeFiles/microsat++.dir/tools.cpp.o CMakeFiles/microsat++.dir/solver.cpp.o CMakeFiles/microsat++.dir/driver.cpp.o CMakeFiles/microsat++.dir/memory.cpp.o  -o microsat++ 

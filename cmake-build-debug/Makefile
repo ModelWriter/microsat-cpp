@@ -123,6 +123,19 @@ microsat++/fast:
 	$(MAKE) -f CMakeFiles/microsat++.dir/build.make CMakeFiles/microsat++.dir/build
 .PHONY : microsat++/fast
 
+#=============================================================================
+# Target rules for targets named memory_allocation_test
+
+# Build rule for target.
+memory_allocation_test: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 memory_allocation_test
+.PHONY : memory_allocation_test
+
+# fast build rule for target.
+memory_allocation_test/fast:
+	$(MAKE) -f CMakeFiles/memory_allocation_test.dir/build.make CMakeFiles/memory_allocation_test.dir/build
+.PHONY : memory_allocation_test/fast
+
 driver.o: driver.cpp.o
 
 .PHONY : driver.o
@@ -176,6 +189,63 @@ main.s: main.cpp.s
 main.cpp.s:
 	$(MAKE) -f CMakeFiles/microsat++.dir/build.make CMakeFiles/microsat++.dir/main.cpp.s
 .PHONY : main.cpp.s
+
+memory.o: memory.cpp.o
+
+.PHONY : memory.o
+
+# target to build an object file
+memory.cpp.o:
+	$(MAKE) -f CMakeFiles/microsat++.dir/build.make CMakeFiles/microsat++.dir/memory.cpp.o
+	$(MAKE) -f CMakeFiles/memory_allocation_test.dir/build.make CMakeFiles/memory_allocation_test.dir/memory.cpp.o
+.PHONY : memory.cpp.o
+
+memory.i: memory.cpp.i
+
+.PHONY : memory.i
+
+# target to preprocess a source file
+memory.cpp.i:
+	$(MAKE) -f CMakeFiles/microsat++.dir/build.make CMakeFiles/microsat++.dir/memory.cpp.i
+	$(MAKE) -f CMakeFiles/memory_allocation_test.dir/build.make CMakeFiles/memory_allocation_test.dir/memory.cpp.i
+.PHONY : memory.cpp.i
+
+memory.s: memory.cpp.s
+
+.PHONY : memory.s
+
+# target to generate assembly for a file
+memory.cpp.s:
+	$(MAKE) -f CMakeFiles/microsat++.dir/build.make CMakeFiles/microsat++.dir/memory.cpp.s
+	$(MAKE) -f CMakeFiles/memory_allocation_test.dir/build.make CMakeFiles/memory_allocation_test.dir/memory.cpp.s
+.PHONY : memory.cpp.s
+
+memory_test.o: memory_test.cpp.o
+
+.PHONY : memory_test.o
+
+# target to build an object file
+memory_test.cpp.o:
+	$(MAKE) -f CMakeFiles/memory_allocation_test.dir/build.make CMakeFiles/memory_allocation_test.dir/memory_test.cpp.o
+.PHONY : memory_test.cpp.o
+
+memory_test.i: memory_test.cpp.i
+
+.PHONY : memory_test.i
+
+# target to preprocess a source file
+memory_test.cpp.i:
+	$(MAKE) -f CMakeFiles/memory_allocation_test.dir/build.make CMakeFiles/memory_allocation_test.dir/memory_test.cpp.i
+.PHONY : memory_test.cpp.i
+
+memory_test.s: memory_test.cpp.s
+
+.PHONY : memory_test.s
+
+# target to generate assembly for a file
+memory_test.cpp.s:
+	$(MAKE) -f CMakeFiles/memory_allocation_test.dir/build.make CMakeFiles/memory_allocation_test.dir/memory_test.cpp.s
+.PHONY : memory_test.cpp.s
 
 solver.o: solver.cpp.o
 
@@ -238,14 +308,21 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... rebuild_cache"
-	@echo "... microsat++"
 	@echo "... edit_cache"
+	@echo "... microsat++"
+	@echo "... memory_allocation_test"
 	@echo "... driver.o"
 	@echo "... driver.i"
 	@echo "... driver.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
+	@echo "... memory.o"
+	@echo "... memory.i"
+	@echo "... memory.s"
+	@echo "... memory_test.o"
+	@echo "... memory_test.i"
+	@echo "... memory_test.s"
 	@echo "... solver.o"
 	@echo "... solver.i"
 	@echo "... solver.s"

@@ -6,6 +6,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_CHECK_CXX
   "/home/ferhat/git/microsat++/driver.cpp" "/home/ferhat/git/microsat++/cmake-build-debug/CMakeFiles/microsat++.dir/driver.cpp.o"
   "/home/ferhat/git/microsat++/main.cpp" "/home/ferhat/git/microsat++/cmake-build-debug/CMakeFiles/microsat++.dir/main.cpp.o"
+  "/home/ferhat/git/microsat++/memory.cpp" "/home/ferhat/git/microsat++/cmake-build-debug/CMakeFiles/microsat++.dir/memory.cpp.o"
   "/home/ferhat/git/microsat++/solver.cpp" "/home/ferhat/git/microsat++/cmake-build-debug/CMakeFiles/microsat++.dir/solver.cpp.o"
   "/home/ferhat/git/microsat++/tools.cpp" "/home/ferhat/git/microsat++/cmake-build-debug/CMakeFiles/microsat++.dir/tools.cpp.o"
   )

@@ -1,6 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/microsat++.dir/driver.cpp.o"
   "CMakeFiles/microsat++.dir/main.cpp.o"
+  "CMakeFiles/microsat++.dir/memory.cpp.o"
   "CMakeFiles/microsat++.dir/solver.cpp.o"
   "CMakeFiles/microsat++.dir/tools.cpp.o"
   "microsat++"

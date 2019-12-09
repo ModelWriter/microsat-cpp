@@ -27,6 +27,16 @@
 					<DistClean command="/usr/bin/make -j4 -f &quot;/home/ferhat/git/microsat++/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/home/ferhat/git/microsat++/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/ferhat/git/microsat++/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/ferhat/git/microsat++/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/ferhat/git/microsat++/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/ferhat/git/microsat++/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
 			<Target title="microsat++">
 				<Option output="/home/ferhat/git/microsat++/cmake-build-debug/microsat++" prefix_auto="0" extension_auto="0"/>
 				<Option working_dir="/home/ferhat/git/microsat++/cmake-build-debug"/>
@@ -73,11 +83,47 @@
 					<DistClean command="/usr/bin/make -j4 -f &quot;/home/ferhat/git/microsat++/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
-			<Target title="edit_cache">
+			<Target title="memory_allocation_test">
+				<Option output="/home/ferhat/git/microsat++/cmake-build-debug/memory_allocation_test" prefix_auto="0" extension_auto="0"/>
 				<Option working_dir="/home/ferhat/git/microsat++/cmake-build-debug"/>
-				<Option type="4"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/home/ferhat/git/microsat++/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/ferhat/git/microsat++/cmake-build-debug/Makefile&quot;  VERBOSE=1 memory_allocation_test"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/ferhat/git/microsat++/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/ferhat/git/microsat++/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/ferhat/git/microsat++/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="memory_allocation_test/fast">
+				<Option output="/home/ferhat/git/microsat++/cmake-build-debug/memory_allocation_test" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/ferhat/git/microsat++/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/ferhat/git/microsat++/cmake-build-debug/Makefile&quot;  VERBOSE=1 memory_allocation_test/fast"/>
 					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/ferhat/git/microsat++/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
 					<Clean command="/usr/bin/make -j4 -f &quot;/home/ferhat/git/microsat++/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 					<DistClean command="/usr/bin/make -j4 -f &quot;/home/ferhat/git/microsat++/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
@@ -92,6 +138,17 @@
 		</Unit>
 		<Unit filename="/home/ferhat/git/microsat++/main.cpp">
 			<Option target="microsat++"/>
+		</Unit>
+		<Unit filename="/home/ferhat/git/microsat++/memory.cpp">
+			<Option target="microsat++"/>
+			<Option target="memory_allocation_test"/>
+		</Unit>
+		<Unit filename="/home/ferhat/git/microsat++/memory.hpp">
+			<Option target="microsat++"/>
+			<Option target="memory_allocation_test"/>
+		</Unit>
+		<Unit filename="/home/ferhat/git/microsat++/memory_test.cpp">
+			<Option target="memory_allocation_test"/>
 		</Unit>
 		<Unit filename="/home/ferhat/git/microsat++/solver.cpp">
 			<Option target="microsat++"/>

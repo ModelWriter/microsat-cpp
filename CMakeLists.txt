@@ -3,7 +3,7 @@ project(microsat++)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_compile_options(-g -Wall -Wextra -Wpedantic -Wnull-dereference -Wnon-virtual-dtor)
+add_compile_options(-O2 -g -Wall -Wextra -Wpedantic -Wnull-dereference -Wnon-virtual-dtor)
 
 #add_definitions(-DDEBUG)
 
@@ -14,4 +14,9 @@ add_executable(microsat++
         solver.cpp
         solver.hpp
         driver.cpp
-        driver.hpp)
+        driver.hpp
+        memory.cpp
+        memory.hpp)
+
+add_executable(memory_allocation_test
+        memory.cpp memory.hpp memory_test.cpp)
