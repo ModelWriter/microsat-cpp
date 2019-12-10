@@ -26,11 +26,12 @@ namespace microsat {
 class driver {
   private:
     const std::string filename;
+    bool stats;
     std::unique_ptr<Solver> solver = nullptr;
     int parse();
 
   public:
-    explicit driver(std::string file);
+    explicit driver(std::string file, bool stats = false);
 
     static void instructions();
 };

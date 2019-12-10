@@ -147,7 +147,7 @@ int Solver::implied(int literal) {
         return (false_[literal] & MARK);
     if (!reason[std::abs(literal)])
         return 0; // In case literal is a decision, it is not implied
-    int* p = (db + reason[abs(literal)] - 1); // Get the reason of literal
+    int* p = (db + reason[std::abs(literal)] - 1); // Get the reason of literal
     // While there are literals in the reason, recursively check if non-MARK
     // literals are implied
     while (*(++p))
@@ -377,6 +377,7 @@ int Solver::solve() {
                 fast = (slow / 100) * 125;
                 restart(); // ToDo restart
                 // Reduce the DB when it contains too many lemmas
+                // Remove "less useful" lemmas from DB
                 if (nLemmas > maxLemmas)
                     reduceDB(6); // ToDo reduceDB
             }

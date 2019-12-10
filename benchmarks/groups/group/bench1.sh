@@ -8,7 +8,7 @@ s=0
 w=0
 # ../../.././microsat++
 # z3
-solver="../../.././microsat++"
+solver="../../.././microsat++ -f "
 fname="bench1"
 if [ -d $fname ]; then
   rm $fname/*

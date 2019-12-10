@@ -87,6 +87,7 @@ class Solver {
     // determines satisfiability
     int solve();
     // Removes "less useful" lemmas from DB
+    // Reduce the DB when it contains too many lemmas
     void reduceDB(int k);
     // Restarting Rule (Glucose scheme using exponential moving averages
     bool restarting();

@@ -13,7 +13,8 @@ using namespace microsat;
 
 // -----------------------------------------------------------------------------
 //
-driver::driver(std::string file) : filename(std::move(file)) {
+driver::driver(std::string file, bool stats)
+    : filename(std::move(file)), stats(stats) {
     if (parse() == UNSAT) {
         std::cout << "unsat";
     }
@@ -33,6 +34,12 @@ driver::driver(std::string file) : filename(std::move(file)) {
         std::cout << "\n";
     }
     // Print the statistics
+    if (stats)
+        std::cout << "statistics of " << filename << ":\n"
+                  << "[ mem_used: " << solver->mem_used()
+                  << ", conflicts: " << solver->nConflicts
+                  << ", lemmas: " << solver->nLemmas
+                  << ", max_lemmas: " << solver->maxLemmas << " ]\n";
 
     P("c--------------------------------------------------------------\n"
       << "c statistics of " << filename << ":\n"
@@ -104,6 +111,7 @@ void driver::instructions() {
     std::cout << "\nUsage: microsat++ <options>"
                  "\n\nOption(s):\n"
                  "\t-h,--help\tShow this help message\n"
-                 "\t-f <file>\tDIMACS cnf file"
+                 "\t-f <file>\tDIMACS cnf file\n"
+                 "\t-s,--stats\tPrint statistics\n"
               << std::endl;
 }

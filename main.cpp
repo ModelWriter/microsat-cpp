@@ -11,16 +11,24 @@
 // -----------------------------------------------------------------------------
 // initiates the driver with the supplied DIMACS filename
 void run(int argc, char* argv[]) {
-    if (argc != 2)
+    bool stats = false;
+    std::string filename;
+    if (argc > 5)
         throw Fatal("Invalid number of arguments: %i\n", argc - 1);
-    std::string str;
-    std::stringstream ss(argv[1]);
-    ss >> str; // Try to get the following argument
-    if (ss.fail())
-        throw Fatal("Invalid Parameter: %s\n", argv[1]);
-    if ((str == "-h") || (str == "--help"))
-        microsat::driver::instructions();
-    microsat::driver drv(str);
+    for (int i = 1; i < argc; ++i)
+        if (argv[i] == std::string("-h") || argv[i] == std::string("--help")) {
+            microsat::driver::instructions();
+            return;
+        } else if (argv[i] == std::string("-s") ||
+                   argv[i] == std::string("--stats")) {
+            stats = true;
+        } else if (argv[i] == std::string("-f")) {
+            filename = argv[++i];
+        } else {
+            microsat::driver::instructions();
+            throw Fatal("Invalid Parameter: %s\n", argv[i]);
+        }
+    microsat::driver drv(filename, stats);
 }
 
 // -----------------------------------------------------------------------------
@@ -29,7 +37,7 @@ int main(int argc, char* argv[]) {
     try {
         run(argc, argv);
     } catch (Fatal& e) {
-        std::cout << "\n\nCatching Fatal exception...\n\n" << e.what() << "\n";
+        std::cout << e.what() << "\n";
     } catch (std::runtime_error& e) {
         std::cerr << "\n\nCatching Runtime Error...\n\n" << e.what() << "\n";
     } catch (std::bad_alloc& e) { // handle memory exhaustion

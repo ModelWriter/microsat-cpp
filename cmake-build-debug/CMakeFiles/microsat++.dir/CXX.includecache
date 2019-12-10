@@ -20,6 +20,14 @@ solver.hpp
 utility
 -
 
+/home/ferhat/git/microsat++/main.cpp
+driver.hpp
+/home/ferhat/git/microsat++/driver.hpp
+tools.hpp
+/home/ferhat/git/microsat++/tools.hpp
+iostream
+-
+
 /home/ferhat/git/microsat++/memory.hpp
 tools.hpp
 /home/ferhat/git/microsat++/tools.hpp
