@@ -161,7 +161,7 @@ int Solver::implied(int literal) {
 
 // -----------------------------------------------------------------------------
 // Removes "less useful" lemmas from DB
-// Remove strategy
+    // Remove strategy
 void Solver::reduceDB(int k) {
     // Allow more lemmas in the future
     while (nLemmas > maxLemmas)
