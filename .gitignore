@@ -95,7 +95,10 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
-cmake-build-debug/CMakeFiles/3.15.3/CompilerIdC/tmp/
-cmake-build-debug/CMakeFiles/3.15.3/CompilerIdCXX/tmp/
-cmake-build-debug/CMakeFiles/CMakeTmp/
-cmake-build-debug/CMakeFiles/calc__.dir/recognizer/
+# remove clion cmake folder
+cmake-build-debug/
+# remove recognizer folder
+sql/recognizer
+# remove .directory
+.directory
+
